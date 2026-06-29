@@ -8,6 +8,8 @@ interface WaypointSidebarProps {
   waypoints: Waypoint[]
   onAdd: (wp: Omit<Waypoint, "id">) => void
   onDelete: (id: string) => void
+  /** When true, omits the fixed-width aside shell (used inside the mobile drawer) */
+  mobile?: boolean
 }
 
 interface FormState {
@@ -25,7 +27,7 @@ function now(): string {
   return d.toISOString().slice(0, 16)
 }
 
-export default function WaypointSidebar({ waypoints, onAdd, onDelete }: WaypointSidebarProps) {
+export default function WaypointSidebar({ waypoints, onAdd, onDelete, mobile = false }: WaypointSidebarProps) {
   const [form, setForm] = useState<FormState>({ ...EMPTY_FORM, timestamp: now() })
   const [errors, setErrors] = useState<Partial<FormState>>({})
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
@@ -55,15 +57,17 @@ export default function WaypointSidebar({ waypoints, onAdd, onDelete }: Waypoint
     setErrors({})
   }
 
-  return (
-    <aside className="flex h-full w-[340px] shrink-0 flex-col border-r border-border bg-card text-card-foreground">
-      {/* Header */}
-      <div className="border-b border-border px-5 py-4">
-        <h1 className="text-base font-semibold tracking-tight text-foreground">Path Tracker</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          {waypoints.length} waypoint{waypoints.length !== 1 ? "s" : ""} recorded
-        </p>
-      </div>
+  const inner = (
+    <>
+      {/* Header — hidden inside mobile drawer (drawer provides its own header) */}
+      {!mobile && (
+        <div className="border-b border-border px-5 py-4">
+          <h1 className="text-base font-semibold tracking-tight text-foreground">Path Tracker</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {waypoints.length} waypoint{waypoints.length !== 1 ? "s" : ""} recorded
+          </p>
+        </div>
+      )}
 
       {/* Add form */}
       <div className="border-b border-border px-5 py-4">
@@ -241,6 +245,16 @@ export default function WaypointSidebar({ waypoints, onAdd, onDelete }: Waypoint
           </ol>
         )}
       </div>
+    </>
+  )
+
+  if (mobile) {
+    return <div className="flex h-full flex-col overflow-hidden">{inner}</div>
+  }
+
+  return (
+    <aside className="flex h-full w-[340px] shrink-0 flex-col border-r border-border bg-card text-card-foreground">
+      {inner}
     </aside>
   )
 }

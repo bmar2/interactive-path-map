@@ -10,6 +10,8 @@ interface WaypointSidebarProps {
   onDelete: (id: string) => void
   /** When true, omits the fixed-width aside shell (used inside the mobile drawer) */
   mobile?: boolean
+  /** When true, shows a loading skeleton for the waypoint list */
+  isLoading?: boolean
 }
 
 interface FormState {
@@ -27,7 +29,7 @@ function now(): string {
   return d.toISOString().slice(0, 16)
 }
 
-export default function WaypointSidebar({ waypoints, onAdd, onDelete, mobile = false }: WaypointSidebarProps) {
+export default function WaypointSidebar({ waypoints, onAdd, onDelete, mobile = false, isLoading = false }: WaypointSidebarProps) {
   const [form, setForm] = useState<FormState>({ ...EMPTY_FORM, timestamp: now() })
   const [errors, setErrors] = useState<Partial<FormState>>({})
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
@@ -157,7 +159,19 @@ export default function WaypointSidebar({ waypoints, onAdd, onDelete, mobile = f
           Route
         </h2>
 
-        {waypoints.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col gap-3 px-5">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="flex gap-3 animate-pulse">
+                <div className="mt-3 h-3 w-3 shrink-0 rounded-full bg-muted" />
+                <div className="flex-1 space-y-1.5 py-2">
+                  <div className="h-3 w-3/4 rounded bg-muted" />
+                  <div className="h-2.5 w-1/2 rounded bg-muted" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : waypoints.length === 0 ? (
           <p className="px-5 text-sm text-muted-foreground">No waypoints yet. Add one above.</p>
         ) : (
           <ol className="flex-1 overflow-y-auto px-5 pb-4">

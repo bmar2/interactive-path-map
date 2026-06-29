@@ -10,6 +10,7 @@ interface MobileDrawerProps {
   waypoints: Waypoint[]
   onAdd: (wp: Omit<Waypoint, "id">) => void
   onDelete: (id: string) => void
+  isLoading?: boolean
 }
 
 export default function MobileDrawer({
@@ -18,6 +19,7 @@ export default function MobileDrawer({
   waypoints,
   onAdd,
   onDelete,
+  isLoading = false,
 }: MobileDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null)
 
@@ -88,6 +90,7 @@ export default function MobileDrawer({
             waypoints={waypoints}
             onAdd={onAdd}
             onDelete={onDelete}
+            isLoading={isLoading}
           />
         </div>
       </div>
@@ -100,6 +103,7 @@ function WaypointSidebarInner(props: {
   waypoints: Waypoint[]
   onAdd: (wp: Omit<Waypoint, "id">) => void
   onDelete: (id: string) => void
+  isLoading?: boolean
 }) {
   return (
     <div className="flex h-full flex-col overflow-hidden">
